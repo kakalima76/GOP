@@ -1,0 +1,17 @@
+<ion-view>
+	 <ion-header-bar class="bar bar-header bar-positive">
+      <h1 class="title">Imagens</h1>
+    </ion-header-bar>
+
+	<ion-content>
+		<div class="list card">
+			<div class="item item-image">
+				<img ng-src="{{pictureUrl}}" width="300" height="300">
+			</div>
+		</div>
+		<div class="padding">
+			<button class="button button-block button-calm" ng-click='tirarFoto()' ui-sref='vistoria'>Fotografar</button>
+		</div>
+
+	</ion-content>
+</ion-view>
