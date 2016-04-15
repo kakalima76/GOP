@@ -40,9 +40,23 @@ angular.module('starter', ['ionic', 'app.controller', 'ngCordova'])
     templateUrl: 'templates/vistoria.html',
     controller: 'vistoriaCtrl'
 
+  })
+
+  .state('solicitacao', {
+    url: '/solicitacao',
+    templateUrl: 'templates/solicitacao.html',
+    controller: 'solicitacaoCtrl'
+
+  })
+
+  .state('apoio', {
+    url: '/apoio',
+    templateUrl: 'templates/apoio.html',
+    controller: 'apoioCtrl'
+
   });
 
     
-  $urlRouterProvider.otherwise('/vistoria');
+  $urlRouterProvider.otherwise('/solicitacao');
 
 });
