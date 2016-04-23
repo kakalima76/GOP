@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'app.controller', 'ngCordova'])
+angular.module('starter', ['ionic', 'app.controller', 'ngCordova', 'ngResource'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -28,35 +28,13 @@ angular.module('starter', ['ionic', 'app.controller', 'ngCordova'])
 .config(function($stateProvider, $urlRouterProvider){
   $stateProvider
   
-  .state('foto', {
-    url: '/foto',
-    templateUrl: 'templates/foto.html',
-    controller: 'cameraCtrl'
-
+  .state('telaescala', {
+    url: '/telaescala',
+    templateUrl: 'templates/telaescala.html',
+    controller: 'telaescalaCtrl'
   })
-
-  .state('vistoria', {
-    url: '/vistoria',
-    templateUrl: 'templates/vistoria.html',
-    controller: 'vistoriaCtrl'
-
-  })
-
-  .state('solicitacao', {
-    url: '/solicitacao',
-    templateUrl: 'templates/solicitacao.html',
-    controller: 'solicitacaoCtrl'
-
-  })
-
-  .state('apoio', {
-    url: '/apoio',
-    templateUrl: 'templates/apoio.html',
-    controller: 'apoioCtrl'
-
-  });
 
     
-  $urlRouterProvider.otherwise('/solicitacao');
+  $urlRouterProvider.otherwise('/telaescala');
 
 });
