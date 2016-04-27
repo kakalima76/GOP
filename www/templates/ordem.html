@@ -53,13 +53,14 @@
         <div class="item item-divider"><center>EQUIPE</center></div>
         <a class="item" ng-repeat='e in equipes'>{{e}}</a>
         <div class="item item-divider"><center>AÇÃO PROGRAMADA</center></div>
-        <a class="item" ng-repeat='a in acaos'>{{a}}</a>
+        <label class="item item-input" ng-repeat='a in acaos'>
+        <textarea >{{a}}</textarea>
+        </label>
         <div class="item item-divider"><center>VIATURA</center></div>
         <a class="item" ng-repeat='v in viaturas'>{{v}}</a>
         <div class="item item-divider"><center>AGENTE</center></div>
         <a class="item" ng-repeat='a in agentes'>{{a}}</a>       
         </div>
-
 
 </ion-content>
 </ion-view>
