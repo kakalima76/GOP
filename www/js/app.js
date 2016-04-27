@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'app.controller', 'ngCordova', 'ngResource'])
+angular.module('starter', ['ionic', 'escala.controller', 'ordem.controller', 'ngCordova', 'ngResource', 'apoio.factory'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -34,7 +34,44 @@ angular.module('starter', ['ionic', 'app.controller', 'ngCordova', 'ngResource']
     controller: 'telaescalaCtrl'
   })
 
-    
-  $urlRouterProvider.otherwise('/telaescala');
+  .state('ordem', {
+    url: '/ordem',
+    templateUrl: 'templates/ordem.html',
+    controller: 'ordemCtrl'
+  })
 
-});
+  .state('equipe', {
+    url: '/equipe',
+    templateUrl: 'templates/equipe.html',
+    controller: 'equipeCtrl'
+  })
+
+   .state('chefe', {
+    url: '/chefe',
+    templateUrl: 'templates/chefe.html',
+    controller: 'chefeCtrl'
+  })
+
+   .state('vtr', {
+    url: '/vtr',
+    templateUrl: 'templates/vtr.html',
+    controller: 'vtrCtrl'
+  })
+
+    .state('acao', {
+    url: '/acao',
+    templateUrl: 'templates/acao.html',
+    controller: 'acaoCtrl'
+  })
+
+   .state('agente', {
+    url: '/agente',
+    templateUrl: 'templates/agente.html',
+    controller: 'agenteCtrl'
+  })
+
+    
+  $urlRouterProvider.otherwise('/ordem');
+
+})
+

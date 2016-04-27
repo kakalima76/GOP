@@ -1,0 +1,26 @@
+<ion-view>
+	<ion-header-bar class="bar bar-header bar-positive">
+    <h1 class="title"><center>EQUIPE</center></h1>
+    </ion-header-bar>
+<ion-content>
+	<div class="list">
+  <label class="item item-input item-select">
+  <div class="input-label">Equipe</div>
+  <select id='equipe'>
+  <option ng-repeat='e in equipes'>{{e}}</option>
+  </select>
+  </label>
+
+  <div><h4 ng-repeat='s in selecionados'>{{s}}</h4></div>
+
+  <button class="button button-full button-assertive" ng-click="confirmar()">
+  Confirmar
+	</button>
+  <button class="button button-full button-assertive" ng-click="limpar()">
+  Limpar
+  </button>
+	<button class="button button-full button-assertive" ng-click="salvar()">
+  	Salvar
+	</button>
+</ion-content>
+</ion-view>

@@ -5,19 +5,25 @@
 <ion-content>
 	<div class="list">
 	
-	<label class="item item-input">
+	<label class="item item-input" ng-show="visiblePeriodo" class="ng-hide">
   	<span class="input-label">Periodo</span>
-  	<input type="month" id='mes'>
+  	<input type="month" id='mes' ng-model='periodo' >
 	</label>
+
+	<button class="button button-full button-assertive" ng-click="escalar()" ng-show="visiblePeriodo" class="ng-hide">
+  	Escalar
+	</button>
+
+	<div ng-show="visible" class="ng-hide"><h3><center>{{nomeMes}}</center></h3></div>
 	
-  	<label class="item item-input item-select">
+  	<label class="item item-input item-select"  ng-show="visible" class="ng-hide">
 	    <div class="input-label">Status</div>
-	    <select ng-model="status"  id="status">
+	    <select ng-model="status"  id="status" ng-change='teste()' >
 	      <option ng-repeat='s in servico'>{{s}}</option>
 	    </select>
   	</label>
 
-  	<label class="item item-input item-select">
+  	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
 	    <div class="input-label">Agentes</div>
 	    <select ng-model="agente"  id="agente">
 	      <option ng-repeat='a in agentes'>{{a}}</option>
@@ -25,25 +31,31 @@
   	</label>
 
  	
-  	<label class="item item-input item-select">
+  	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
 	    <div class="input-label">Folgas</div>
 	    <select ng-model="passo"  id="passo">
 	      <option ng-repeat='f in folgas'>{{f}}</option>
 	    </select>
   	</label>
 
-  	<label class="item item-input item-select">
+  	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
 	    <div class="input-label">Primeiro dia</div>
 	    <select ng-model="inicio"  id="inicio">
 	      <option ng-repeat='d in dias'>{{d}}</option>
 	    </select>
   	</label>
+  	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
+	    <div class="input-label">Último dia</div>
+	    <select ng-model="fim"  id="fim">
+	      <option ng-repeat='d in dias'>{{d}}</option>
+	    </select>
+  	</label>
   	</div>
-  	<button class="button button-full button-assertive" ng-click="escalar()">
+  	<button class="button button-full button-assertive" ng-click="salvar()" ng-show="visible" class="ng-hide">
   	Salvar
 	</button>
-  	
-  	
-</label>
+	<button class="button button-full button-assertive" ng-click="selecionar()" ng-show="visible" class="ng-hide">
+  	Selecionar
+	</button>  	
 </ion-content>
 </ion-view>

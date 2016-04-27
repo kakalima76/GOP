@@ -1,0 +1,65 @@
+<ion-view>
+	<ion-header-bar class="bar bar-header bar-positive">
+    <h1 class="title"><center>ORDEM DE SERVIÇO</center></h1>
+    </ion-header-bar>
+<ion-content>
+  <h3 class='numero'><center id='numOrdem'></center></h3>
+	<label class="item item-input">
+  <span class="input-label">Data</span>
+  <input type="date" id='data'>
+  </label>
+  <div class="list">
+  	<label class="item item-input item-select">
+    <div class="input-label">Apresentação</div>
+    <select id='apresentacao'>
+    <option ng-repeat='h in horas'>{{h}}</option>
+    </select>
+  	</label>
+  	<label class="item item-input item-select">
+    <div class="input-label">Témino</div>
+    <select id='termino'>
+    <option ng-repeat='h in horas'>{{h}}</option>
+    </select>
+  	</label>
+    <label class="item item-input item-select">
+    <div class="input-label">Fases</div>
+    <select id='fase' ng-model='fase' ng-change='selecionar()'>
+    <option ng-repeat='f in fases'>{{f}}</option> 
+    </select>
+    </label>
+	</div>
+  <button class="button button-full button-assertive" ng-show='showChefe' class='ng-hide' ng-click="abrirChefe()">
+    Escalar chefe
+  </button>
+  <button class="button button-full button-assertive" ng-show='showAcao' class='ng-hide' ng-click="abrirAcao()">
+    Definir ação
+  </button>
+  <button class="button button-full button-assertive" ng-show='showVtr' class='ng-hide' ng-click="abrirViatura()">
+    Definir VTR
+  </button>
+  <button class="button button-full button-assertive" ng-show='showEquipe' class='ng-hide' ng-click="abrirEquipe()">
+    Definir equipe
+  </button>
+	<button class="button button-full button-assertive" ng-show='showAgentes' class='ng-hide' ng-click="abrirAgentes()">
+  	Escalar Agentes
+	</button>
+  <button class="button button-full button-assertive" ng-show='showSalvar' class='ng-hide' ng-click="salvar()">
+    Salvar
+  </button>
+  
+        <div class="list">
+        <div class="item item-divider" ng-click='clicar()'><center>CHEFIA</center></div>
+        <a class="item" ng-repeat='c in chefias'>{{c}}</a>
+        <div class="item item-divider"><center>EQUIPE</center></div>
+        <a class="item" ng-repeat='e in equipes'>{{e}}</a>
+        <div class="item item-divider"><center>AÇÃO PROGRAMADA</center></div>
+        <a class="item" ng-repeat='a in acaos'>{{a}}</a>
+        <div class="item item-divider"><center>VIATURA</center></div>
+        <a class="item" ng-repeat='v in viaturas'>{{v}}</a>
+        <div class="item item-divider"><center>AGENTE</center></div>
+        <a class="item" ng-repeat='a in agentes'>{{a}}</a>       
+        </div>
+
+
+</ion-content>
+</ion-view>
