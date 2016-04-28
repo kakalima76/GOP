@@ -1,7 +1,7 @@
 angular.module('ordem.controller', [])
-.controller('ordemCtrl', ['$scope', 'ordemFactory', 'retornaService', 'agentesService', function($scope, ordemFactory, retornaService, agentesService){
+.controller('ordemCtrl', ['$state','$scope', 'ordemFactory', 'retornaService', 'agentesService', function($state, $scope, ordemFactory, retornaService, agentesService){
 	ordemFactory.setNumero();
-	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar']
+	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar', 'escalar', 'sair']
 	$scope.horas = ['','00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
 	$scope.showChefe = false;
 	$scope.showAcao = false;
@@ -9,6 +9,8 @@ angular.module('ordem.controller', [])
 	$scope.showEquipe = false;
 	$scope.showAgentes = false;
 	$scope.showSalvar = false;
+	$scope.showEscalar = false;
+	$scope.showSair = false;
 
 	$scope.selecionar = function(){
 		
@@ -19,6 +21,8 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = false;
 			$scope.showAgentes = false;
 			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
 		}else if(document.getElementById('fase').value === 'ação'){
 			$scope.showChefe = false;
 			$scope.showAcao = true;
@@ -26,6 +30,8 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = false;
 			$scope.showAgentes = false;
 			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
 		}else if(document.getElementById('fase').value === 'vtr'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -33,6 +39,8 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = false;
 			$scope.showAgentes = false;
 			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
 		}else if(document.getElementById('fase').value === 'equipe'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -40,6 +48,8 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = true;
 			$scope.showAgentes = false;
 			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
 		}else if(document.getElementById('fase').value === 'agentes'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -47,6 +57,8 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = false;
 			$scope.showAgentes = true;
 			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
 		}else if(document.getElementById('fase').value === 'salvar'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -54,6 +66,26 @@ angular.module('ordem.controller', [])
 			$scope.showEquipe = false;
 			$scope.showAgentes = false;
 			$scope.showSalvar = true;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
+		}else if(document.getElementById('fase').value === 'escalar'){
+			$scope.showChefe = false;
+			$scope.showAcao = false;
+			$scope.showVtr = false;
+			$scope.showEquipe = false;
+			$scope.showAgentes = false;
+			$scope.showSalvar = false;
+			$scope.showEscalar = true;
+			$scope.showSair = false;
+		}else{
+			$scope.showChefe = false;
+			$scope.showAcao = false;
+			$scope.showVtr = false;
+			$scope.showEquipe = false;
+			$scope.showAgentes = false;
+			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = true;
 		}
 	}
 
@@ -133,6 +165,14 @@ angular.module('ordem.controller', [])
 		}
 	}
 
+	$scope.escalar = function(){
+		$state.go('telaescala');
+	}
+
+	$scope.sair = function(){
+        return navigator.app.exitApp()
+    }
+
 
 }])
 
@@ -147,7 +187,7 @@ angular.module('ordem.controller', [])
 	}
 
 	var filtrarChefe = function(value){
-		if(value.data == retornaService.getData() && value.chefe == true && value.status == 'folga'){
+		if(value.data == retornaService.getData() && value.chefe == true && value.status == 'plantão'){
 			return true;
 		}
 	}
@@ -302,7 +342,7 @@ angular.module('ordem.controller', [])
 	}
 
 	var filtrarAgente = function(value){
-		if(value.data == retornaService.getData() && value.chefe == false && value.status == 'folga'){
+		if(value.data == retornaService.getData() && value.chefe == false && value.status == 'plantão'){
 			return true;
 		}
 	}

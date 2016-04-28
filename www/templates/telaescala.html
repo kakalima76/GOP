@@ -33,9 +33,7 @@
  	
   	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
 	    <div class="input-label">Folgas</div>
-	    <select ng-model="passo"  id="passo">
-	      <option ng-repeat='f in folgas'>{{f}}</option>
-	    </select>
+	    <select ng-model="passo"  id="passo" ng-options="o as o.value for o in folgas track by o.id"></select>
   	</label>
 
   	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
@@ -50,12 +48,24 @@
 	      <option ng-repeat='d in dias'>{{d}}</option>
 	    </select>
   	</label>
+  	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
+	    <div class="input-label">Opções</div>
+	    <select ng-model="opcao"  id="opcao" ng-change='mostrar()'>
+	      <option ng-repeat='o in opcoes'>{{o}}</option>
+	    </select>
+  	</label>
   	</div>
-  	<button class="button button-full button-assertive" ng-click="salvar()" ng-show="visible" class="ng-hide">
+  	<button class="button button-full button-assertive" ng-click="salvar()" ng-show="showSalvar" class="ng-hide">
   	Salvar
 	</button>
-	<button class="button button-full button-assertive" ng-click="selecionar()" ng-show="visible" class="ng-hide">
-  	Selecionar
-	</button>  	
+	<button class="button button-full button-assertive" ng-click="selecionar()" ng-show="showSelecionar" class="ng-hide">
+  	Selecionar mês
+	</button> 
+	<button class="button button-full button-assertive" ng-click="criarOS()" ng-show="showOrdem" class="ng-hide">
+  	Criar OS
+	</button>
+	<button class="button button-full button-assertive" ng-click="sair()" ng-show="showSair" class="ng-hide">
+  	Sair
+	</button>   	 	
 </ion-content>
 </ion-view>

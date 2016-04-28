@@ -28,6 +28,12 @@ angular.module('starter', ['ionic', 'escala.controller', 'ordem.controller', 'ng
 .config(function($stateProvider, $urlRouterProvider){
   $stateProvider
   
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'loginCtrl'
+  })
+  
   .state('telaescala', {
     url: '/telaescala',
     templateUrl: 'templates/telaescala.html',
