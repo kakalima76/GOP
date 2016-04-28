@@ -1,6 +1,6 @@
 angular.module('ordem.controller', [])
-.controller('ordemCtrl', ['$state','$scope', 'ordemFactory', 'retornaService', 'agentesService', function($state, $scope, ordemFactory, retornaService, agentesService){
-	ordemFactory.setNumero();
+.controller('ordemCtrl', ['$http', '$q', '$state','$scope', 'ordemFactory', 'retornaService', 'agentesService', function($http, $q, $state, $scope, ordemFactory, retornaService, agentesService){
+	//ordemFactory.setNumero();
 	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar', 'escalar', 'sair']
 	$scope.horas = ['','00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
 	$scope.showChefe = false;
@@ -11,6 +11,41 @@ angular.module('ordem.controller', [])
 	$scope.showSalvar = false;
 	$scope.showEscalar = false;
 	$scope.showSair = false;
+	//seta a visibilidade do botão chefia
+	$scope.disabledChefia = false;
+
+
+	var setNumero = function(){
+	
+			return $q(function(resolve, reject){
+	
+				var promise = $http.get('http://ccuanexos.herokuapp.com/ordem/ultimo')
+				promise.then(function(data){
+				ordemFactory.setNumero(data.data[0].numero + 1)
+				var ordem = ordemFactory.get();
+				//ordem.numero = data.data[0].numero + 1;
+				resolve(ordem.numero);
+				document.getElementById("numOrdem").innerHTML = ordem.numero;
+	
+				});
+	
+				promise.then(function(){
+					$scope.$broadcast('scroll.refreshComplete');
+					console.log(ordemFactory.get());
+				});
+	
+				promise.catch(function(err){alert(err);});
+		})	
+	}
+
+	$scope.doRefresh = function(){
+		var promise = setNumero();
+		promise
+		.then(function(data){
+			console.log(data);
+		})
+		.then($scope.disabledChefia = false);
+	}
 
 	$scope.selecionar = function(){
 		
@@ -123,6 +158,9 @@ angular.module('ordem.controller', [])
 			$scope.acaos  = [];
 			$scope.viaturas  = [];
 			$scope.agentes  = [];
+			$scope.disabledChefia = true;
+			ordemFactory.destruir();
+			document.getElementById("numOrdem").innerHTML = null;
 		
 	}
 
@@ -132,11 +170,17 @@ angular.module('ordem.controller', [])
 		var fim = document.getElementById('termino').value;
 		ordemFactory.setHorarios(inicio, fim)
 		limpaObj();
+		console.log(ordemFactory.get());
 	}
 
 	$scope.clicar = function(){
 
-		var obj = ordemFactory.get();
+		if(ordemFactory.get()){
+			if(ordemFactory.get() !== undefined){
+				var obj = ordemFactory.get();
+			}
+			
+		}
 
 		if(obj.chefe){
 			var array1 = obj.chefe.split(',');
@@ -177,7 +221,7 @@ angular.module('ordem.controller', [])
 }])
 
 
-.controller('chefeCtrl', ['$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($q, $http, $scope, retornaService, agentesService, ordemFactory){
+.controller('chefeCtrl', ['$ionicLoading', '$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, agentesService, ordemFactory){
 	$scope.selBotao = false;
 	$scope.selChefe = true;
 	$scope.chefes = [];
@@ -198,16 +242,15 @@ angular.module('ordem.controller', [])
 		agentes.escala = []
 		return $q(function(resolve, reject){
 			var promise = $http.get('http://ccuanexos.herokuapp.com/agentes/');
-			var node = document.createElement('h5');
-			var texto = document.createTextNode('caregando...');
-			node.appendChild(texto);
-			document.getElementById('carregar').appendChild(node);
 
+				$ionicLoading.show({template: 'Carregando...'});
+  
+    				
 					promise.then
 					(
 						function(data)
 						{
-						document.getElementById('carregar').removeChild(node);
+						$ionicLoading.hide();
 						var response = data.data.filter(filtrarChefe);
 						var map = response.map(function(value){
 							return value.nome;
@@ -219,6 +262,7 @@ angular.module('ordem.controller', [])
 					promise.catch
 					(
 						function(err){
+							$ionicLoading.hide();
 							reject(err);
 						}
 					)
@@ -270,7 +314,6 @@ angular.module('ordem.controller', [])
 	}
 	
 }])
-
 
 .controller('vtrCtrl', ['$scope', 'retornaService', 'ordemFactory', function($scope, retornaService, ordemFactory){
 	$scope.viaturas = ['', 'amarok 01', 'amarok 02']
@@ -332,7 +375,7 @@ angular.module('ordem.controller', [])
 
 }])
 
-.controller('agenteCtrl', ['$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($q, $http, $scope, retornaService, agentesService, ordemFactory){
+.controller('agenteCtrl', ['$ionicLoading','$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, agentesService, ordemFactory){
 	$scope.selBotao = false;
 	$scope.selChefe = true;
 	$scope.chefes = [];
@@ -353,16 +396,13 @@ angular.module('ordem.controller', [])
 		agentes.escala = []
 		return $q(function(resolve, reject){
 			var promise = $http.get('http://ccuanexos.herokuapp.com/agentes/');
-			var node = document.createElement('h5');
-			var texto = document.createTextNode('caregando...');
-			node.appendChild(texto);
-			document.getElementById('carregar').appendChild(node);
+				$ionicLoading.show({template: 'Carregando...'});
 
 					promise.then
 					(
 						function(data)
 						{
-						document.getElementById('carregar').removeChild(node);
+						$ionicLoading.hide();
 						var response = data.data.filter(filtrarAgente);
 						var map = response.map(function(value){
 							return value.nome;
@@ -374,6 +414,7 @@ angular.module('ordem.controller', [])
 					promise.catch
 					(
 						function(err){
+							$ionicLoading.hide();
 							reject(err);
 						}
 					)

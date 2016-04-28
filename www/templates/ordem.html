@@ -3,6 +3,12 @@
     <h1 class="title"><center>ORDEM DE SERVIÇO</center></h1>
     </ion-header-bar>
 <ion-content>
+  <ion-refresher
+    pulling-text="Puxe para atualizar..."
+    on-refresh="doRefresh()">
+  </ion-refresher>
+
+
   <h3 class='numero'><center id='numOrdem'></center></h3>
 	<label class="item item-input">
   <span class="input-label">Data</span>
@@ -54,9 +60,9 @@
   </button>
   
         <div class="list">
-        <div class="item item-divider" ng-click='clicar()'><center>CHEFIA</center></div>
+        <div class="item item-divider" ng-model="chefia" ng-disabled="disabledChefia" ng-click='clicar()'><center ng-disabled="disabledChefia" >CHEFIA</center></div>
         <a class="item" ng-repeat='c in chefias'>{{c}}</a>
-        <div class="item item-divider"><center>EQUIPE</center></div>
+        <div class="item item-divider" ><center>EQUIPE</center></div>
         <a class="item" ng-repeat='e in equipes'>{{e}}</a>
         <div class="item item-divider"><center>AÇÃO PROGRAMADA</center></div>
         <label class="item item-input" ng-repeat='a in acaos'>

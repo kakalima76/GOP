@@ -77,7 +77,7 @@ angular.module('starter', ['ionic', 'escala.controller', 'ordem.controller', 'ng
   })
 
     
-  $urlRouterProvider.otherwise('/ordem');
+  $urlRouterProvider.otherwise('/login');
 
 })
 

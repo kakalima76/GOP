@@ -1,19 +1,29 @@
 angular.module('apoio.factory', [])
 
-.factory('ordemFactory', ['$http', 'retornaService', function($http,retornaService){
+.factory('ordemFactory', ['$q', '$http', 'retornaService', function($q, $http,  retornaService){
 	var ordem = {}
 
-	var setNumero = function(){
-		var promise = $http.get('http://ccuanexos.herokuapp.com/ordem/ultimo')
-		promise.then(function(data){
+	var setNumero = function(numero){/*
+
+		return $q(function(resolve, reject){
+
+			var promise = $http.get('http://ccuanexos.herokuapp.com/ordem/ultimo')
+			promise.then(function(data){
 			ordem.numero = data.data[0].numero + 1;
 
 			document.getElementById("numOrdem").innerHTML = ordem.numero;
 
-		}).catch(function(err){
-			alert(err);
-		})
-	}
+			});
+
+			promise.then(function(){
+				$scope.$broadcast('scroll.refreshComplete');
+			})
+
+			promise.catch(function(err){alert(err);});
+
+	})*/
+	return ordem.numero = numero;
+}
 
 	
 	var setHorarios = function(apresentacao, termino){
@@ -42,19 +52,12 @@ angular.module('apoio.factory', [])
 		ordem.equipe = equipe.toString();
 	}
 
-
 	var get = function(){
 		return ordem;
 	}
 
-
-	var getCorpo = function(){
-		var obj = get();
-		var num = obj.numero;
-		var chefe = obj.chefe || '';
-		var texto = num + '\n' + chefe
-
-		document.getElementById("corpoOrdem").innerHTML = texto;
+	var destruir = function(){
+		ordem = {};
 	}
 
 	return {
@@ -65,7 +68,7 @@ angular.module('apoio.factory', [])
 		setChefe: setChefe,
 		setViatura: setViatura,
 		setAgentes: setAgentes,
-		getCorpo: getCorpo,
+		destruir: destruir,
 		get: get
 	}
 
@@ -83,16 +86,12 @@ angular.module('apoio.factory', [])
 		var texto = document.createTextNode('caregando...');
 		node.appendChild(texto);
 		document.getElementById('carregar').appendChild(node);
-
-		setTimeout(function(){
+		
 			promise.then(function(data){
 			agentes.escala = data.data;
 			document.getElementById('carregar').removeChild(node);
 			console.log(agentes.escala.length)
-		})
-		}, 4000)
-		
-
+			})
 	}
 
 	var get = function(){
@@ -129,12 +128,18 @@ angular.module('apoio.factory', [])
 		return map.sort();
 	}
 
+	var destruir = function(){
+		agentes = null;
+		delete agentes;
+	}
+
 
 	return {
 		get: get,
 		setAgentes: setAgentes,
 		getAgentes: getAgentes,
-		getChefes: getChefes
+		getChefes: getChefes,
+		destruir: destruir
 	}
 
 }])
@@ -190,8 +195,6 @@ angular.module('apoio.factory', [])
 		$state.go(rota);
 	}
 
-
-
 	var formaData = function(data){
 		ano = data.substring(0,4);
 		mes = data.substring(5,7);
@@ -202,8 +205,6 @@ angular.module('apoio.factory', [])
 	var getData = function(){
 		return array.data;
 	}
-
-
 
 	return {
 		get: get,
