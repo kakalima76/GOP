@@ -1,5 +1,5 @@
 angular.module('ordem.controller', [])
-.controller('ordemCtrl', ['$http', '$q', '$state','$scope', 'ordemFactory', 'retornaService', 'agentesService', function($http, $q, $state, $scope, ordemFactory, retornaService, agentesService){
+.controller('ordemCtrl', ['$ionicLoading','$http', '$q', '$state','$scope', 'ordemFactory', 'retornaService', function($ionicLoading, $http, $q, $state, $scope, ordemFactory, retornaService){
 	//ordemFactory.setNumero();
 	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar', 'escalar', 'sair']
 	$scope.horas = ['','00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
@@ -31,10 +31,11 @@ angular.module('ordem.controller', [])
 	
 				promise.then(function(){
 					$scope.$broadcast('scroll.refreshComplete');
-					console.log(ordemFactory.get());
 				});
 	
-				promise.catch(function(err){alert(err);});
+				promise.catch(function(err){
+					reject(err);
+				});
 		})	
 	}
 
@@ -42,7 +43,6 @@ angular.module('ordem.controller', [])
 		var promise = setNumero();
 		promise
 		.then(function(data){
-			console.log(data);
 		})
 		.then($scope.disabledChefia = false);
 	}
@@ -160,17 +160,95 @@ angular.module('ordem.controller', [])
 			$scope.agentes  = [];
 			$scope.disabledChefia = true;
 			ordemFactory.destruir();
-			document.getElementById("numOrdem").innerHTML = null;
-		
+			document.getElementById('data').value = '';
+			document.getElementById('apresentacao').selectedIndex = 0;
+			document.getElementById('termino').selectedIndex = 0;
+			document.getElementById("numOrdem").innerHTML = null;	
+	}
+
+
+	function criaOrdem(){
+		var inicio = document.getElementById('apresentacao').value;
+		var fim = document.getElementById('termino').value;
+		var dia = retornaService.getData();
+		ordemFactory.setHorarios(inicio, fim, dia);
+
+		return $q(function(resolve, reject){
+			var obj = ordemFactory.get();
+			var count = 0;
+
+			//itera o objeto para contar os atributos
+			for (i in obj){
+			count++;
+			}
+
+			function inserir(){
+				body = ordemFactory.get();
+				$http.post('http://ccuanexos.herokuapp.com/ordem', body);
+			}
+
+			if(count === 10){
+				resolve(inserir());
+			}else{
+				alert('OS incompleta.');
+			}
+
+		})
+
+	}
+
+	function atualizaEscala(){
+		return $q(function(resolve, reject){
+			var obj = ordemFactory.get();
+			var ordem = obj.numero;
+			var dia = obj.data;
+			var chefes = obj.chefe.split(',');
+			
+			var agentes = obj.agentes.split(',');
+			var tamVetor = agentes.length;
+			var count = 0;
+			chefes.forEach(function(value){
+				agentes.push(value);
+			})
+
+			agentes.forEach(function(value){
+				count++;
+
+				var body =
+				{
+					nome: value.substring(3).trim(),
+					data: dia,
+					status: 'escalado',
+					ordem: ordem
+				}
+
+			var promise = $http.put('http://ccuanexos.herokuapp.com/agentes/escala', body);
+			$ionicLoading.show({template: 'Carregando...'});
+  		
+			promise.catch(function(err){
+				$ionicLoading.hide();
+				return reject(err);
+			});
+
+				if(tamVetor === count){
+					promise.then(function(){
+					$ionicLoading.hide();
+					limpaObj();
+					});
+				}
+			})
+		});
 	}
 
 	$scope.salvar = function(){
 		//retornaService.abrirPagina('ordem');
-		var inicio = document.getElementById('apresentacao').value;
-		var fim = document.getElementById('termino').value;
-		ordemFactory.setHorarios(inicio, fim)
-		limpaObj();
-		console.log(ordemFactory.get());
+		
+		var promise = criaOrdem();
+
+		promise
+		.then(atualizaEscala)
+		.then(limpaObj)
+		
 	}
 
 	$scope.clicar = function(){
@@ -207,6 +285,7 @@ angular.module('ordem.controller', [])
 			var array5 = obj.agentes.split(',');
 			$scope.agentes  = array5;
 		}
+
 	}
 
 	$scope.escalar = function(){
@@ -221,7 +300,7 @@ angular.module('ordem.controller', [])
 }])
 
 
-.controller('chefeCtrl', ['$ionicLoading', '$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, agentesService, ordemFactory){
+.controller('chefeCtrl', ['$ionicLoading', '$q', '$http', '$scope', 'retornaService', 'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, ordemFactory){
 	$scope.selBotao = false;
 	$scope.selChefe = true;
 	$scope.chefes = [];
@@ -276,20 +355,14 @@ angular.module('ordem.controller', [])
 		promise.then(function(data){
 			$scope.selBotao = true;
 			$scope.selChefe = false;
-			$scope.chefes = data.sort();
-		})
-		/*agentesService.setAgentes();
-		$scope.chefes = agentesService.getChefes();
-		$scope.selBotao = true;
-		$scope.selChefe = false;*/
-
-		
-
+			$scope.chefes = ['']
+			data.forEach(function(value){
+				$scope.chefes.push(value);
+			})
+		})	
 	}
 
 	
-
-
 	$scope.limpar = function(){
 		retornaService.reseta();
 		$scope.selecionados = retornaService.retornaArray();
@@ -304,78 +377,22 @@ angular.module('ordem.controller', [])
 	}
 
 	$scope.salvar = function(){
-		ordemFactory.setChefe($scope.selecionados)
-		retornaService.reseta();
-		$scope.selecionados = retornaService.retornaArray();
-		$scope.chefes = retornaService.retornaArray();
-		retornaService.abrirPagina('ordem');
-		$scope.selBotao = false;
-		$scope.selChefe = true;
+
+	
+			ordemFactory.setChefe($scope.selecionados)
+			retornaService.reseta();
+			$scope.selecionados = retornaService.retornaArray();
+			$scope.chefes = retornaService.retornaArray();
+			retornaService.abrirPagina('ordem');
+			$scope.selBotao = false;
+			$scope.selChefe = true;
+
+		
 	}
 	
 }])
 
-.controller('vtrCtrl', ['$scope', 'retornaService', 'ordemFactory', function($scope, retornaService, ordemFactory){
-	$scope.viaturas = ['', 'amarok 01', 'amarok 02']
-	$scope.selecionados = []
-	if(retornaService.retornaArray()){
-		retornaService.reseta();
-	}
-
-
-	$scope.limpar = function(){
-		retornaService.reseta();
-		$scope.selecionados = retornaService.retornaArray();
-	}
-
-	$scope.confirmar = function(){
-		var rg = /(,)*(;)*/ig;
-		var str = document.getElementById('vtr').value
-		retornaService.guarda(str.replace(rg,''));
-		//coloquei ambos retornando retornaService.retornaArray() pois retorna um array vazio
-		$scope.selecionados = retornaService.retornaArray();
-		$scope.chefes = retornaService.retornaArray();
-		document.getElementById('vtr').value = null;
-	}
-	$scope.salvar = function(){
-		ordemFactory.setViatura($scope.selecionados);
-		retornaService.stateGo();
-		
-	}
-}])
-
-
-.controller('acaoCtrl', ['ordemFactory', '$scope', 'retornaService', function(ordemFactory, $scope, retornaService){
-	$scope.selecionados = []
-	if(retornaService.retornaArray()){
-		retornaService.reseta();
-	}
-
-	
-	$scope.limpar = function(){
-		retornaService.reseta();
-		$scope.selecionados = retornaService.retornaArray();
-	}
-
-	$scope.confirmar = function(){
-		
-		var rg = /(,)*(;)*/ig;
-		var str = document.getElementById('acao').value
-		retornaService.guarda(str.replace(rg,''));
-		$scope.selecionados = retornaService.retornaArray();
-		document.getElementById('acao').value = null;
-	}
-
-	$scope.salvar = function(){
-		ordemFactory.setAcao($scope.selecionados);
-		retornaService.stateGo();
-		
-	}
-
-
-}])
-
-.controller('agenteCtrl', ['$ionicLoading','$q', '$http', '$scope', 'retornaService', 'agentesService', 'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, agentesService, ordemFactory){
+.controller('agenteCtrl', ['$ionicLoading','$q', '$http', '$scope', 'retornaService',  'ordemFactory', function($ionicLoading, $q, $http, $scope, retornaService, ordemFactory){
 	$scope.selBotao = false;
 	$scope.selChefe = true;
 	$scope.chefes = [];
@@ -439,8 +456,6 @@ angular.module('ordem.controller', [])
 
 	}
 
-	
-
 
 	$scope.limpar = function(){
 		retornaService.reseta();
@@ -466,6 +481,66 @@ angular.module('ordem.controller', [])
 	}
 	
 }])
+
+.controller('vtrCtrl', ['$scope', 'retornaService', 'ordemFactory', function($scope, retornaService, ordemFactory){
+	$scope.viaturas = ['', 'amarok 01', 'amarok 02']
+	$scope.selecionados = []
+	if(retornaService.retornaArray()){
+		retornaService.reseta();
+	}
+
+
+	$scope.limpar = function(){
+		retornaService.reseta();
+		$scope.selecionados = retornaService.retornaArray();
+	}
+
+	$scope.confirmar = function(){
+		var rg = /(,)*(;)*/ig;
+		var str = document.getElementById('vtr').value
+		retornaService.guarda(str.replace(rg,''));
+		//coloquei ambos retornando retornaService.retornaArray() pois retorna um array vazio
+		$scope.selecionados = retornaService.retornaArray();
+		$scope.chefes = retornaService.retornaArray();
+		document.getElementById('vtr').value = null;
+	}
+	$scope.salvar = function(){
+		ordemFactory.setViatura($scope.selecionados);
+		retornaService.stateGo();
+		
+	}
+}])
+
+
+.controller('acaoCtrl', ['ordemFactory', '$scope', 'retornaService', function(ordemFactory, $scope, retornaService){
+	$scope.selecionados = []
+	if(retornaService.retornaArray()){
+		retornaService.reseta();
+	}
+
+	
+	$scope.limpar = function(){
+		retornaService.reseta();
+		$scope.selecionados = retornaService.retornaArray();
+	}
+
+	$scope.confirmar = function(){
+		
+		var rg = /(,)*(;)*/ig;
+		var str = document.getElementById('acao').value
+		retornaService.guarda(str.replace(rg,''));
+		$scope.selecionados = retornaService.retornaArray();
+		document.getElementById('acao').value = null;
+	}
+
+	$scope.salvar = function(){
+		ordemFactory.setAcao($scope.selecionados);
+		retornaService.stateGo();	
+	}
+
+
+}])
+
 
 .controller('equipeCtrl', ['$scope', 'retornaService', 'ordemFactory', function($scope, retornaService, ordemFactory){
 	$scope.equipes = ['','PAF01','PAF02','PAF03','PAF04','PAF05','PAF06','PAF07','PAF08','PAF09','NEP'];

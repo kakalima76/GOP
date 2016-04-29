@@ -3,32 +3,16 @@ angular.module('apoio.factory', [])
 .factory('ordemFactory', ['$q', '$http', 'retornaService', function($q, $http,  retornaService){
 	var ordem = {}
 
-	var setNumero = function(numero){/*
-
-		return $q(function(resolve, reject){
-
-			var promise = $http.get('http://ccuanexos.herokuapp.com/ordem/ultimo')
-			promise.then(function(data){
-			ordem.numero = data.data[0].numero + 1;
-
-			document.getElementById("numOrdem").innerHTML = ordem.numero;
-
-			});
-
-			promise.then(function(){
-				$scope.$broadcast('scroll.refreshComplete');
-			})
-
-			promise.catch(function(err){alert(err);});
-
-	})*/
+	var setNumero = function(numero){
 	return ordem.numero = numero;
-}
+	}
 
 	
-	var setHorarios = function(apresentacao, termino){
+	var setHorarios = function(apresentacao, termino, dia){
+		ordem.status = 'ativa';
 		ordem.apresentacao = apresentacao;
 		ordem.termino = termino;
+		ordem.data = dia;
 	}
 
 	
@@ -75,80 +59,11 @@ angular.module('apoio.factory', [])
 
 }])
 
-.service('agentesService', ['$http', 'retornaService', function($http, retornaService){
-	var agentes = {};
-	agentes.escala = []
-
-
-	var setAgentes = function(){
-		var promise = $http.get('http://ccuanexos.herokuapp.com/agentes/');
-		var node = document.createElement('h5');
-		var texto = document.createTextNode('caregando...');
-		node.appendChild(texto);
-		document.getElementById('carregar').appendChild(node);
-		
-			promise.then(function(data){
-			agentes.escala = data.data;
-			document.getElementById('carregar').removeChild(node);
-			console.log(agentes.escala.length)
-			})
-	}
-
-	var get = function(){
-		return agentes;
-	}
-
-	var filtrarAgente = function(value){
-		if(value.data == retornaService.getData() && value.chefe == false && value.status == 'folga'){
-			return true;
-		}
-	}
-
-	var getAgentes = function(){
-		var agentes = get();
-		var array = agentes.escala.filter(filtrarAgente);
-		var map = array.map(function(val){
-			return val.nome;
-		})
-		return map.sort();
-	}
-
-	var filtrarChefe = function(value){
-		if(value.data == retornaService.getData() && value.chefe == true && value.status == 'folga'){
-			return true;
-		}
-	}
-	
-	var getChefes = function(){
-		var agentes = get();
-		var array = agentes.escala.filter(filtrarChefe);
-		var map = array.map(function(val){
-			return val.nome;
-		})
-		return map.sort();
-	}
-
-	var destruir = function(){
-		agentes = null;
-		delete agentes;
-	}
-
-
-	return {
-		get: get,
-		setAgentes: setAgentes,
-		getAgentes: getAgentes,
-		getChefes: getChefes,
-		destruir: destruir
-	}
-
-}])
-
-
 .service('retornaService', ['$state', function($state){
 	var array = {
 
 	}
+
 
 	array.elem = [];
 	array.num = 0;
@@ -159,7 +74,7 @@ angular.module('apoio.factory', [])
 
 	var stateGo = function(){
 		$state.go('ordem');
-		if(document.getElementById('fase').selectedIndex != 0){
+		if(!document.getElementById('fase').value){
 			document.getElementById('fase').selectedIndex = 0;
 		}
 		
@@ -174,7 +89,6 @@ angular.module('apoio.factory', [])
 			{
 			val = array.num + ') ' + val;
 			}
-
 			array.elem.push(val);
 		}else{
 			alert('Escolha uma opção.')
@@ -201,6 +115,7 @@ angular.module('apoio.factory', [])
 		dia = data.substring(8,10);
 		array.data = dia+mes+ano;
 	}
+
 
 	var getData = function(){
 		return array.data;

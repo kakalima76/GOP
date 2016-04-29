@@ -1,9 +1,9 @@
 angular.module('escala.controller', [])
 
-.controller('telaescalaCtrl', ['$q','$scope', '$http', '$state', function($q, $scope, $http, $state){
-	$scope.agentes = ['', 'nieraldo', 'aurélio'];
+.controller('telaescalaCtrl', ['$ionicLoading','$q','$scope', '$http', '$state', function($ionicLoading, $q, $scope, $http, $state){
+	$scope.agentes = ['', 'nieraldo', 'aurélio','fulano'];
 	$scope.agentes.sort();
-	$scope.servico = ['', 'expediente', 'folga', 'plantao', '24horas', 'extra', 'complemento', 'férias', 'bim', 'sobreaviso', 'dispensa', 'licença', 'feira']
+	$scope.servico = ['', 'expediente', 'folga', 'plantão', '24horas', 'extra', 'complemento', 'férias', 'bim', 'sobreaviso', 'dispensa', 'licença', 'feira']
 	$scope.folgas = 
 	[
 	{id: 0, value: ''},
@@ -74,8 +74,9 @@ angular.module('escala.controller', [])
 		return (num < 10) ? '0' + num : num;
 	}
 
-	//limpar todos os elementos de combobox
+	//limpar todos os elementos de combobox e salva a ordem no db
 	function limpar(){
+
 		document.getElementById('status').selectedIndex = 0;
 		document.getElementById('agente').selectedIndex = 0;
 		document.getElementById('passo').selectedIndex = 0;
@@ -150,16 +151,24 @@ angular.module('escala.controller', [])
 			}
 
 			var promise = $http.put('http://ccuanexos.herokuapp.com/agentes/escala', body);
+			$ionicLoading.show({template: 'Carregando...'})
 			promise.then(function(){
 				count+=1;
 				if(flag === count){
-					resolve('Concluido.');
+					resolve(function(){
+						$ionicLoading.hide();
+					})
+					
 				}
+			}).then(function(){
+				$ionicLoading.hide();
 			})
 
 			promise.catch(function(err){
 				if(err){
-					reject('Falha na comunicação.');
+					reject(function(){
+						$ionicLoading.hide();
+					});
 				}
 			})
 
@@ -170,11 +179,8 @@ angular.module('escala.controller', [])
 	$scope.salvar = function(){
 		
 		var promise = popula();
-		promise.then(function(value){
-			alert(value);
-		}).catch(function(err){
-			alert(err);
-		})
+		promise.then();
+		promise.catch();
 		
 	}
 
