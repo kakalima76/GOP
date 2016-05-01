@@ -1,0 +1,27 @@
+<ion-view>
+	<ion-header-bar class="bar bar-header bar-positive">
+    <h1 class="title"><center>CANCELA OS</center></h1>
+    </ion-header-bar>
+
+    
+<ion-content>
+  <ion-refresher
+  pulling-text="Puxe para retornar..."
+  on-refresh="doRefresh()">
+  </ion-refresher>
+  
+        <div class="item item-divider head" id='cabnum'><center>NÚMERO</center></div>
+        <div class="list">
+        <label class="item item-input">
+        <input type="text" placeholder="Informe o numero" id='numero' class='centraliza'>
+        </label>      
+        </div>
+
+        <button class="button button-full button-calm" ng-click="cancelar()">
+        Cancelar
+        </button>
+  
+        
+</ion-content>
+        
+</ion-view>

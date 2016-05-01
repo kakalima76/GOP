@@ -6,3 +6,25 @@
 .alinha{
 	text-align: justify;
 }
+
+.head {
+	background-color: DarkCyan;
+}
+
+.centraliza {
+	text-align: center;
+}
+
+.texto{
+	background-color: #8B1C62;
+	color: white;
+}
+
+.conteudo{
+	background-color: #87CEFF;
+}
+
+.textarea{
+        text-align: justify;
+        white-space: normal;
+    }

@@ -1,7 +1,7 @@
 angular.module('ordem.controller', [])
 .controller('ordemCtrl', ['$ionicLoading','$http', '$q', '$state','$scope', 'ordemFactory', 'retornaService', function($ionicLoading, $http, $q, $state, $scope, ordemFactory, retornaService){
 	//ordemFactory.setNumero();
-	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar', 'escalar', 'sair']
+	$scope.fases = ['', 'chefe', 'equipe', 'ação', 'vtr', 'agentes', 'salvar', 'escalar', 'sair', 'os']
 	$scope.horas = ['','00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30', '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30', '23:00', '23:30'];
 	$scope.showChefe = false;
 	$scope.showAcao = false;
@@ -11,6 +11,7 @@ angular.module('ordem.controller', [])
 	$scope.showSalvar = false;
 	$scope.showEscalar = false;
 	$scope.showSair = false;
+	$scope.showVer = false;
 	//seta a visibilidade do botão chefia
 	$scope.disabledChefia = false;
 
@@ -58,6 +59,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'ação'){
 			$scope.showChefe = false;
 			$scope.showAcao = true;
@@ -67,6 +69,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'vtr'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -76,6 +79,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'equipe'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -85,6 +89,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'agentes'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -94,6 +99,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'salvar'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -103,6 +109,7 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = true;
 			$scope.showEscalar = false;
 			$scope.showSair = false;
+			$scope.showVer = false;
 		}else if(document.getElementById('fase').value === 'escalar'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
@@ -112,7 +119,8 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = true;
 			$scope.showSair = false;
-		}else{
+			$scope.showVer = false;
+		}else if(document.getElementById('fase').value === 'sair'){
 			$scope.showChefe = false;
 			$scope.showAcao = false;
 			$scope.showVtr = false;
@@ -121,6 +129,17 @@ angular.module('ordem.controller', [])
 			$scope.showSalvar = false;
 			$scope.showEscalar = false;
 			$scope.showSair = true;
+			$scope.showVer = false;
+		}else{
+			$scope.showChefe = false;
+			$scope.showAcao = false;
+			$scope.showVtr = false;
+			$scope.showEquipe = false;
+			$scope.showAgentes = false;
+			$scope.showSalvar = false;
+			$scope.showEscalar = false;
+			$scope.showSair = false;
+			$scope.showVer = true;
 		}
 	}
 
@@ -290,6 +309,10 @@ angular.module('ordem.controller', [])
 
 	$scope.escalar = function(){
 		$state.go('telaescala');
+	}
+
+	$scope.verOS = function(){
+		$state.go('numero');
 	}
 
 	$scope.sair = function(){
@@ -562,5 +585,174 @@ angular.module('ordem.controller', [])
 	}
 
 }])
+
+.controller('numeroCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', 'canceladaFactory', function($scope, $http, $q, $ionicLoading, $state, canceladaFactory){
+	$scope.numero = 0;
+	$scope.showMostrar = false;
+
+	function busca(){
+		return $q(function(resolve, reject){
+			var numero = document.getElementById('numero').value;
+			if(numero){
+			var body = {numero: numero}
+
+						var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
+						$ionicLoading.show({template: 'Carregando...'});
+						promise.then(function(data){
+							$ionicLoading.hide();
+							resolve(data)
+						})
+						.catch(function(err){
+							$ionicLoading.hide();
+							reject('Número inexistente');
+						})
+			}else{
+				reject('Informe um número.');
+			}
+		})
+	};
+
+				function dataExtenso(data){
+					var dia = data.substring(0,2);
+					var mes = parseInt(data.substring(2,4));
+					var ano = data.substring(4);
+					var meses = ['', 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+					return dia +' de '+ meses[mes] + ' de ' + ano;
+				} 
+
+
+				function preenche(obj){
+					$scope.status = obj.status;
+					$scope.data = dataExtenso(obj.data);
+					$scope.apresentacao = obj.apresentacao;
+					$scope.termino = obj.termino;
+					$scope.chefias = obj.chefe;
+					$scope.equipes = obj.equipe;
+					$scope.acaos = obj.acao;
+					$scope.viaturas = obj.viatura;
+					$scope.agentes = obj.agentes;
+					$scope.showMostrar = true;
+				}
+
+				$scope.buscar = function(){
+					var promise = busca();
+					promise.then(function(data){
+					var obj = data.data[0];
+						if(obj){
+							preenche(obj);
+							
+						}else{
+							alert('Número inválido');
+						}
+					});		
+
+
+					promise.catch(function(err){
+					alert(err);
+					})
+				}
+
+				$scope.doRefresh = function(){
+					$state.go('ordem');
+				}
+
+				$scope.cancelar = function(){
+					$state.go('cancela');
+				}
+
+	
+}])
+
+.controller('cancelaCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', 'canceladaFactory', function($scope, $http, $q, $ionicLoading, $state, canceladaFactory){
+	$scope.numero = 0;
+	$scope.showMostrar = false;
+
+	function desescalar(obj){
+		var cancelados = []
+		var data = obj.data;
+
+		obj.chefe.forEach(function(value){
+			//console.log(value.substring(3));
+			cancelados.push(value.substring(4));
+		})
+
+		obj.agentes.forEach(function(value){
+			//console.log(value.substring(3))
+			cancelados.push(value.substring(4));
+		})
+
+		cancelados.forEach(function(value){
+			var body = {nome: value, data: data, status: 'plantão', ordem: ''}
+			var promise = $http.put('http://ccuanexos.herokuapp.com/agentes/escala', body)
+			$ionicLoading.show({template: 'Carregando...'});
+			promise.then($ionicLoading.hide()).catch($ionicLoading.hide());
+		})
+
+	}
+
+	function atualiza(){
+
+			var numero = document.getElementById('numero').value;
+			var body = {numero: numero, status: 'cancelada'}
+			$ionicLoading.show({template: 'Carregando...'});
+			var promise = $http.put('http://ccuanexos.herokuapp.com/ordem/escala', body);
+			promise.then($ionicLoading.hide());
+			promise.catch($ionicLoading.hide());
+	}		
+
+	function busca(){
+		return $q(function(resolve, reject){
+			var numero = document.getElementById('numero').value;
+			if(numero){
+			var body = {numero: numero}
+
+						var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
+						$ionicLoading.show({template: 'Carregando...'});
+						promise.then(function(data){
+							$ionicLoading.hide();
+							atualiza();
+							resolve(data)
+						})
+						.catch(function(err){
+							$ionicLoading.hide();
+							reject('Número inexistente');
+						})
+			}else{
+				reject('Informe um número.');
+			}
+		})
+	};
+				
+
+				$scope.cancelar = function(){
+					var promise = busca();
+					promise.then(function(data){
+					var obj = data.data[0];
+						if(obj){
+							desescalar(obj);
+							
+						}else{
+							alert('Número inválido');
+					}
+				
+				});		
+
+
+					promise.catch(function(err){
+					alert(err);
+					})
+				}
+
+				$scope.doRefresh = function(){
+					$state.go('numero');
+				}
+
+	
+}])
+
+.controller('trocaCtrl', ['$scope', function($scope){
+	console.log('entrei');
+}])
+
 
 

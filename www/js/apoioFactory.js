@@ -132,3 +132,21 @@ angular.module('apoio.factory', [])
 		getData: getData
 	}
 }])
+
+.factory('canceladaFactory', [function(){
+	var obj = {}
+	
+	var set = function(value){
+		obj = value;
+	}
+
+	var get = function(){
+		return obj
+	}
+
+	return {
+		set: set,
+		get: get
+	}
+
+}])

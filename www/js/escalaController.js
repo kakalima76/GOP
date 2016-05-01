@@ -1,7 +1,7 @@
 angular.module('escala.controller', [])
 
 .controller('telaescalaCtrl', ['$ionicLoading','$q','$scope', '$http', '$state', function($ionicLoading, $q, $scope, $http, $state){
-	$scope.agentes = ['', 'nieraldo', 'aurélio','fulano'];
+	$scope.agentes = ['', 'nieraldo', 'aurelio','fulano','beltrano','siclano'];
 	$scope.agentes.sort();
 	$scope.servico = ['', 'expediente', 'folga', 'plantão', '24horas', 'extra', 'complemento', 'férias', 'bim', 'sobreaviso', 'dispensa', 'licença', 'feira']
 	$scope.folgas = 

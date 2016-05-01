@@ -76,6 +76,24 @@ angular.module('starter', ['ionic', 'escala.controller', 'ordem.controller', 'ng
     controller: 'agenteCtrl'
   })
 
+   .state('numero', {
+    url: '/numero',
+    templateUrl: 'templates/numero.html',
+    controller: 'numeroCtrl'
+  })
+
+   .state('cancela', {
+    url: '/cancela',
+    templateUrl: 'templates/cancela.html',
+    controller: 'cancelaCtrl'
+  })
+
+   .state('troca', {
+    url: '/troca',
+    templateUrl: 'templates/troca.html',
+    controller: 'trocaCtrl'
+  })
+
     
   $urlRouterProvider.otherwise('/login');
 
