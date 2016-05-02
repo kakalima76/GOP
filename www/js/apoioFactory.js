@@ -169,6 +169,14 @@ angular.module('apoio.factory', [])
 		return obj.str;
 	}
 
+	var setDiv = function(value){
+		obj.div = value;
+	}
+
+	var getDiv = function(){
+		return obj.div;
+	}
+
 	return {
 		set: set,
 		get: get,
@@ -177,7 +185,9 @@ angular.module('apoio.factory', [])
 		setPosicao: setPosicao,
 		getPosicao: getPosicao,
 		setNumero: setNumero,
-		getNumero: getNumero
+		getNumero: getNumero,
+		setDiv: setDiv,
+		getDiv: getDiv
 
 	}
 

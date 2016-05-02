@@ -13,12 +13,12 @@
         <div class="item item-divider head" id='cabnum'><center>NÚMERO</center></div>
         <div class="list">
         <label class="item item-input">
-        <input type="text" placeholder="Informe o numero" id='numero' class='centraliza'>
+        <input type="number" placeholder="Informe o numero" id='num' ng-model='num' class='centraliza'>
         </label>    
         
         <label class="item item-input item-select">
         <div class="input-label">Chefia</div>
-        <select id='posicao'>
+        <select id='posicao' ng-model='posicao'>
         <option ng-repeat='p in posicoes'>{{p}}</option>
         </select>
         </label>
@@ -41,12 +41,25 @@
         </select>
         </label>
 
+        <label class="item item-input item-select">
+        <div class="input-label">Opções</div>
+        <select id='opcao' ng-model='opcao' ng-change='mostrar()' ng-show='showOpcao'>
+        <option ng-repeat='o in opcoes'>{{o}}</option>
+        </select>
+        </label>
 
         </div>
 
+        <button class="button button-full button-calm" ng-click="trocar()" ng-show='showTrocar'>
+        Trocar
+        </button>
 
-        <button class="button button-full button-calm" ng-click="salvar()">
-        Salvar
+        <button class="button button-full button-calm" ng-click="tirar()" ng-show='showTirar'>
+        Tirar
+        </button>
+
+        <button class="button button-full button-calm" ng-click="inserir()" ng-show='showInserir'>
+        Inserir
         </button>
   
         

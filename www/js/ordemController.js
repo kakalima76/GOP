@@ -692,7 +692,7 @@ angular.module('ordem.controller', [])
 
 	function atualiza(){
 
-			var numero = document.getElementById('numero').value;
+			var numero = document.getElementById('numcancela').value;
 			var body = {numero: numero, status: 'cancelada'}
 			$ionicLoading.show({template: 'Carregando...'});
 			var promise = $http.put('http://ccuanexos.herokuapp.com/ordem/escala', body);
@@ -702,24 +702,22 @@ angular.module('ordem.controller', [])
 
 	function busca(){
 		return $q(function(resolve, reject){
-			var numero = document.getElementById('numero').value;
-			if(numero){
+			var numero = document.getElementById('numcancela').value;
+			
 			var body = {numero: numero}
 
-						var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
-						$ionicLoading.show({template: 'Carregando...'});
-						promise.then(function(data){
-							$ionicLoading.hide();
-							atualiza();
-							resolve(data)
-						})
-						.catch(function(err){
-							$ionicLoading.hide();
-							reject('Número inexistente');
-						})
-			}else{
-				reject('Informe um número.');
-			}
+					var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
+					$ionicLoading.show({template: 'Carregando...'});
+					promise.then(function(data){
+					$ionicLoading.hide();
+					atualiza();
+					resolve(data)
+					})
+					.catch(function(err){
+					$ionicLoading.hide();
+					reject('Número inexistente');
+					})
+			
 		})
 	};
 				
@@ -756,6 +754,11 @@ angular.module('ordem.controller', [])
 
 .controller('trocaCtrl', ['$scope', '$q', '$http', '$ionicLoading', 'dataFactory', '$state', function($scope, $q, $http, $ionicLoading, dataFactory, $state){
 $scope.posicoes = ['','chefe','agentes']
+$scope.opcoes = ['', 'trocar', 'tirar', 'inserir']
+$scope.showTrocar = false;
+$scope.showTirar = false;
+$scope.showInserir = false;
+$scope.showOpcao = false;
 var dataOrdem = '';
 
 var obj = {}
@@ -782,12 +785,16 @@ obj.agentes = 'fulano';
 
 	function busca(){
 		return $q(function(resolve, reject){
-			var numero = document.getElementById('numero').value;
-			var posicao = document.getElementById('posicao').value;
-			if(numero && posicao){
+			var numero = document.getElementById('num').value || '';
+			var posicao = document.getElementById('posicao').value || '';
 			var body = {numero: numero}
 
 						var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
+						if(!numero){
+							reject('Defina um numero')
+						}else if(!posicao){
+							reject('Defina chefia!')
+						}
 						$ionicLoading.show({template: 'Carregando...'});
 						promise.then(function(data){
 							$ionicLoading.hide();
@@ -804,17 +811,14 @@ obj.agentes = 'fulano';
 								}					
 
 							}else{
-								reject('Dados incorretos!');
+								reject('Obj inexistente');
 							}
 							
 						})
 						.catch(function(err){
 							$ionicLoading.hide();
-							reject('Dados incorretos!');
+							reject(err);
 						})
-			}else{
-				reject('Dados incorretos!.');
-			}
 		})
 	};
 
@@ -853,6 +857,7 @@ obj.agentes = 'fulano';
 				transferencia.forEach(function(value){
 					$scope.entrada.push(value.nome);
 				})
+				$scope.showOpcao = true;
 			})
 		})
 
@@ -863,7 +868,7 @@ obj.agentes = 'fulano';
 
 
 	function atualiza(valor){
-		var numero = document.getElementById('numero').value;
+		var numero = document.getElementById('num').value;
 		var chefia = document.getElementById('posicao').value;
 		var body = {}
 		body['numero'] = numero;
@@ -921,7 +926,7 @@ obj.agentes = 'fulano';
 		$scope.saida = [''];
 	}
 
-	$scope.salvar = function(){
+	$scope.trocar = function(){
 		var array = [];
 		var entra = document.getElementById('entra').value;
 		var sai = document.getElementById('sai').value;
@@ -952,8 +957,115 @@ obj.agentes = 'fulano';
 		entraStatus();
 		saiStatus();
 		reseta();
+		esconder();
+	}
 
+	function filter(value){
+		var sai = document.getElementById('sai').value;
+		if(value === sai){
+			return false;
+		}
+	}
 
+	function esconder(){
+		document.getElementById('opcao').selectedIndex = 0;
+		$scope.showTrocar = false;
+		$scope.showTirar = false;
+		$scope.showInserir = false;
+		$scope.showOpcao = false;
+
+	}
+
+	$scope.mostrar = function(){
+		var valor = document.getElementById('opcao').value;
+		if(valor === 'trocar'){
+			$scope.showTrocar = true;
+			$scope.showTirar = false;
+			$scope.showInserir = false;
+		}else if(valor === 'tirar'){
+			$scope.showTrocar = false;
+			$scope.showTirar = true;
+			$scope.showInserir = false;
+		}else if(valor === 'inserir'){
+			$scope.showTrocar = false;
+			$scope.showTirar = false;
+			$scope.showInserir = true;
+		}else{
+			$scope.showTrocar = false;
+			$scope.showTirar = false;
+			$scope.showInserir = false;
+		}
+
+	}
+
+	$scope.tirar =  function(){
+		var array = [];
+		var entra = document.getElementById('entra').value;
+		var sai = document.getElementById('sai').value;
+		var chefia = document.getElementById('posicao').value;
+
+		dataFactory.getEscalados().forEach(function(value){
+			array.push(value.substring(4).trim());
+		});
+
+		var editado = array.filter(filter);
+
+		str = editado.toString();
+		var count = 0;
+		novoArray = str.split(',');
+		strArray = []
+
+		novoArray.forEach(function(value){
+			count++;
+			if(count < 10){
+				var pre = '0' + count + ') ';
+			}else{
+				var pre = count + ') ';
+			}
+
+			strArray.push(pre + value)
+		})
+
+		if(strArray.toString().length === 4){
+			strArray = [''];
+		}
+
+		atualiza(strArray.toString());
+		saiStatus();
+		reseta();
+		esconder();
+	}
+
+	$scope.inserir = function(){
+		var array = [];
+		var entra = document.getElementById('entra').value;
+		var chefia = document.getElementById('posicao').value;
+
+		dataFactory.getEscalados().forEach(function(value){
+			array.push(value.substring(4).trim());
+		});
+
+		array.push(entra);
+		str = array.toString();
+		var count = 0;
+		novoArray = str.split(',');
+		strArray = []
+
+		novoArray.forEach(function(value){
+			count++;
+			if(count < 10){
+				var pre = '0' + count + ') ';
+			}else{
+				var pre = count + ') ';
+			}
+
+			strArray.push(pre + value)
+		})
+
+		atualiza(strArray.toString());
+		entraStatus();
+		reseta();
+		esconder();
 	}
 
 	$scope.doRefresh = function(){
