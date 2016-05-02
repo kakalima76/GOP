@@ -586,7 +586,7 @@ angular.module('ordem.controller', [])
 
 }])
 
-.controller('numeroCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', 'canceladaFactory', function($scope, $http, $q, $ionicLoading, $state, canceladaFactory){
+.controller('numeroCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', function($scope, $http, $q, $ionicLoading, $state){
 	$scope.numero = 0;
 	$scope.showMostrar = false;
 
@@ -663,7 +663,7 @@ angular.module('ordem.controller', [])
 	
 }])
 
-.controller('cancelaCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', 'canceladaFactory', function($scope, $http, $q, $ionicLoading, $state, canceladaFactory){
+.controller('cancelaCtrl', ['$scope', '$http', '$q', '$ionicLoading', '$state', function($scope, $http, $q, $ionicLoading, $state){	
 	$scope.numero = 0;
 	$scope.showMostrar = false;
 
@@ -744,14 +744,223 @@ angular.module('ordem.controller', [])
 				}
 
 				$scope.doRefresh = function(){
-					$state.go('numero');
+					$state.go('ordem');
+				}
+
+				$scope.trocar = function(){
+					$state.go('troca');
 				}
 
 	
 }])
 
-.controller('trocaCtrl', ['$scope', function($scope){
-	console.log('entrei');
+.controller('trocaCtrl', ['$scope', '$q', '$http', '$ionicLoading', 'dataFactory', '$state', function($scope, $q, $http, $ionicLoading, dataFactory, $state){
+$scope.posicoes = ['','chefe','agentes']
+var dataOrdem = '';
+
+var obj = {}
+obj.chefe = 'nieraldo';
+obj.agentes = 'fulano';
+
+	
+	var filtrar = function(value){
+		var chefe = document.getElementById('posicao').value;
+
+		if(chefe){
+			if(chefe === 'chefe'){
+				var flag = true;
+			}else{
+				var flag = false;
+			}
+		}
+
+		if(value.data == dataFactory.get() && value.chefe == flag && value.status == 'plantão'){
+			return true;
+		}
+	}
+
+
+	function busca(){
+		return $q(function(resolve, reject){
+			var numero = document.getElementById('numero').value;
+			var posicao = document.getElementById('posicao').value;
+			if(numero && posicao){
+			var body = {numero: numero}
+
+						var promise = $http.post('http://ccuanexos.herokuapp.com/ordem/numero', body)
+						$ionicLoading.show({template: 'Carregando...'});
+						promise.then(function(data){
+							$ionicLoading.hide();
+							var obj = data.data[0];			
+							if(obj){
+								if(obj.status === 'ativa'){
+									dataFactory.set(obj.data);
+									dataFactory.setNumero(obj.numero);
+									dataFactory.setEscalados(obj[posicao]);//seta a string que será utilizada para ver quem está escalado
+									var str = dataFactory.getEscalados()
+									resolve(obj[posicao]);
+								}else{
+									reject('OS cancelada');
+								}					
+
+							}else{
+								reject('Dados incorretos!');
+							}
+							
+						})
+						.catch(function(err){
+							$ionicLoading.hide();
+							reject('Dados incorretos!');
+						})
+			}else{
+				reject('Dados incorretos!.');
+			}
+		})
+	};
+
+	function localiza(){
+		var body = {data: dataFactory.get(), status: 'plantão' }
+		return $q(function(resolve, reject){
+			$ionicLoading.show({template: 'Carregando...'});
+			var promise = $http.post('http://ccuanexos.herokuapp.com/agentes/localiza', body)
+			.then(function(data){
+				$ionicLoading.hide();
+				resolve(data)
+			})
+			.catch(function(err){
+				$ionicLoading.hide();
+				resolve(err);
+			})
+		})
+	}
+
+	
+
+	$scope.buscar = function(){
+		$scope.entrada = [];
+		$scope.saida = [];
+		var promise = busca();
+		promise.then(function(value){
+			$scope.saida = [];
+			value.forEach(function(value){
+				$scope.saida.push(value.substring(4));
+			})
+		}).then(function(){
+			var promise = localiza();
+			promise.then(function(data){
+				var transferencia = data.data.filter(filtrar);
+				$scope.entrada = [];
+				transferencia.forEach(function(value){
+					$scope.entrada.push(value.nome);
+				})
+			})
+		})
+
+		promise.catch(function(err){
+			alert(err);
+		});
+	}
+
+
+	function atualiza(valor){
+		var numero = document.getElementById('numero').value;
+		var chefia = document.getElementById('posicao').value;
+		var body = {}
+		body['numero'] = numero;
+		body[chefia] = valor;
+		if(chefia === 'chefe'){
+		$ionicLoading.show({template: 'Carregando...'});
+			$http.put('http://ccuanexos.herokuapp.com/ordem/atualChefe', body)
+			.then(function(value){
+				$ionicLoading.hide();
+			})
+			.catch($ionicLoading.hide());
+		}else{
+		$ionicLoading.show({template: 'Carregando...'});
+			$http.put('http://ccuanexos.herokuapp.com/ordem/atualAgente', body)
+			.then(function(value){
+				$ionicLoading.hide();
+			})
+			.catch($ionicLoading.hide());	
+		}
+	}
+
+
+	function entraStatus(){
+		var obj = {}
+		var nome = document.getElementById('entra').value;
+			if(nome){
+				obj['nome']		= nome;
+				obj['data'] 	= dataFactory.get();
+				obj['status'] 	= 'escalado'
+				obj['ordem'] 	= dataFactory.getNumero().toString();
+				$ionicLoading.show({template: 'Carregando...'});
+				$http.put('http://ccuanexos.herokuapp.com/agentes/escala', obj)
+				.then($ionicLoading.hide())
+				.catch($ionicLoading.hide())
+		}
+	}
+
+	function saiStatus(){
+		var obj = {}
+		var nome = document.getElementById('sai').value;
+			if(nome){
+				obj['nome']		= nome;
+				obj['data'] 	= dataFactory.get();
+				obj['status'] 	= 'plantão';
+				obj['ordem'] 	= '0';
+				$ionicLoading.show({template: 'Carregando...'});
+				$http.put('http://ccuanexos.herokuapp.com/agentes/escala', obj)
+				.then($ionicLoading.hide())
+				.catch($ionicLoading.hide())
+		}
+	}
+
+	function reseta(){
+		$scope.entrada = [''];
+		$scope.saida = [''];
+	}
+
+	$scope.salvar = function(){
+		var array = [];
+		var entra = document.getElementById('entra').value;
+		var sai = document.getElementById('sai').value;
+		var chefia = document.getElementById('posicao').value;
+
+		dataFactory.getEscalados().forEach(function(value){
+			array.push(value.substring(4).trim());
+		});
+
+		str = array.toString();
+		var nova = str.replace(sai, entra);
+		var count = 0;
+		novoArray = nova.split(',');
+		strArray = []
+
+		novoArray.forEach(function(value){
+			count++;
+			if(count < 10){
+				var pre = '0' + count + ') ';
+			}else{
+				var pre = count + ') ';
+			}
+
+			strArray.push(pre + value)
+		})
+
+		atualiza(strArray.toString());
+		entraStatus();
+		saiStatus();
+		reseta();
+
+
+	}
+
+	$scope.doRefresh = function(){
+		$state.go('ordem');
+	}
+
+
 }])
 
 

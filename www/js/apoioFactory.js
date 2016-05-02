@@ -133,20 +133,52 @@ angular.module('apoio.factory', [])
 	}
 }])
 
-.factory('canceladaFactory', [function(){
-	var obj = {}
+.factory('dataFactory', [function(){
+	var obj = {};
 	
 	var set = function(value){
-		obj = value;
+		obj.data = value;
 	}
 
 	var get = function(){
-		return obj
+		return obj.data;
+	}
+
+	var setNumero = function(value){
+		obj.numero = value;
+	}
+
+	var getNumero = function(){
+		return obj.numero;
+	}
+
+	var setEscalados = function(value){
+		obj.escalados = value;
+	}
+
+	var getEscalados = function(){
+		return obj.escalados;
+	}
+
+	//seta a string '00)' anterior a ser extraída para retorno posterior
+	var setPosicao = function(value){
+		obj.str = value
+	}
+
+	var getPosicao = function(){
+		return obj.str;
 	}
 
 	return {
 		set: set,
-		get: get
+		get: get,
+		setEscalados: setEscalados,
+		getEscalados: getEscalados,
+		setPosicao: setPosicao,
+		getPosicao: getPosicao,
+		setNumero: setNumero,
+		getNumero: getNumero
+
 	}
 
 }])

@@ -1,0 +1,55 @@
+<ion-view>
+	<ion-header-bar class="bar bar-header bar-positive">
+    <h1 class="title"><center>TROCA</center></h1>
+    </ion-header-bar>
+
+    
+<ion-content>
+  <ion-refresher
+  pulling-text="Puxe para retornar..."
+  on-refresh="doRefresh()">
+  </ion-refresher>
+  
+        <div class="item item-divider head" id='cabnum'><center>NÚMERO</center></div>
+        <div class="list">
+        <label class="item item-input">
+        <input type="text" placeholder="Informe o numero" id='numero' class='centraliza'>
+        </label>    
+        
+        <label class="item item-input item-select">
+        <div class="input-label">Chefia</div>
+        <select id='posicao'>
+        <option ng-repeat='p in posicoes'>{{p}}</option>
+        </select>
+        </label>
+
+        <button class="button button-full button-calm" ng-click="buscar()">
+        Buscar
+        </button>
+
+        <label class="item item-input item-select">
+        <div class="input-label">Entra</div>
+        <select id='entra'>
+        <option ng-repeat='e in entrada'>{{e}}</option>
+        </select>
+        </label>
+
+        <label class="item item-input item-select">
+        <div class="input-label">Sai</div>
+        <select id='sai'>
+        <option ng-repeat='s in saida'>{{s}}</option>
+        </select>
+        </label>
+
+
+        </div>
+
+
+        <button class="button button-full button-calm" ng-click="salvar()">
+        Salvar
+        </button>
+  
+        
+</ion-content>
+        
+</ion-view>
