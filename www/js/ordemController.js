@@ -968,7 +968,7 @@ obj.agentes = 'fulano';
 	}
 
 	function esconder(){
-		document.getElementById('opcao').selectedIndex = 0;
+		//document.getElementById('opcao').selectedIndex = 0;
 		$scope.showTrocar = false;
 		$scope.showTirar = false;
 		$scope.showInserir = false;
@@ -977,7 +977,7 @@ obj.agentes = 'fulano';
 	}
 
 	$scope.mostrar = function(){
-		var valor = document.getElementById('opcao').value;
+		var valor = document.getElementById('opcaoTrocar').value;
 		if(valor === 'trocar'){
 			$scope.showTrocar = true;
 			$scope.showTirar = false;
