@@ -110,9 +110,30 @@ angular.module('apoio.factory', [])
 	}
 
 	var formaData = function(data){
-		ano = data.substring(0,4);
-		mes = data.substring(5,7);
-		dia = data.substring(8,10);
+		var ano = data.substring(0,4);
+		var dia = '10'
+		if(data.length === 10){
+			mes = data.substring(5,7);
+			dia = data.substring(8,10);
+		}else if (data.length === 9){
+
+			if(parseInt(data.substring(5,7)) > 9){
+				var mes = data.substring(5,7);
+			}else{
+				var mes = '0' + data.substring(5,6);
+			}
+
+			if(parseInt(data.substring(7,9)) > 9){
+				var dia = data.substring(7,9);
+			}else{
+				var dia = '0' + data.substring(8,9);
+			}
+
+		}else if (data.length === 8){
+			var mes = '0' + data.substring(5,6);
+			var dia = '0' + data.substring(7,8);
+		}
+		
 		array.data = dia+mes+ano;
 	}
 

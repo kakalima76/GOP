@@ -23,10 +23,17 @@
 	    </select>
   	</label>
 
+  	<label class="item item-input item-select"  ng-show="visible" class="ng-hide">
+	    <div class="input-label">Setor</div>
+	    <select ng-model="setor"  id="setor" ng-change="populaSetor()">
+	      <option ng-repeat='s in setores'>{{s}}</option>
+	    </select>
+  	</label>
+
   	<label class="item item-input item-select" ng-show="visible" class="ng-hide">
 	    <div class="input-label">Agentes</div>
 	    <select ng-model="agente"  id="agente">
-	      <option ng-repeat='a in agentes'>{{a}}</option>
+	      <option ng-repeat='a in newAgentes'>{{a}}</option>
 	    </select>
   	</label>
 

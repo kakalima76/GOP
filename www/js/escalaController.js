@@ -1,13 +1,47 @@
 angular.module('escala.controller', [])
 
 .controller('telaescalaCtrl', ['$ionicLoading','$q','$scope', '$http', '$state', function($ionicLoading, $q, $scope, $http, $state){
-	$scope.agentes = ['', 'nieraldo', 'aurelio','fulano','beltrano','siclano'];
+	$scope.setores = ['PAF10', 'PAF11', 'GOP', 'NPMA']
+
+	function filtraSetor(value){
+		var opt = document.getElementById('setor').value;
+		if(value.setor === opt){
+			return true
+		}
+	}
+
+	var arrayAgentes = 
+	[
+		{nome: 'norlan', setor: 'PAF11'}, 
+		{nome: 'magna', setor: 'PAF11'},
+		{nome: 'luiz', setor: 'PAF11'},
+		{nome: 'sandro', setor: 'PAF11'},
+		{nome: 'de sá', setor: 'PAF11'},
+		{nome: 'mauro', setor: 'PAF11'},
+		{nome: 'queiroz', setor: 'PAF10'},
+		{nome: 'manuelle', setor: 'PAF10'},
+		{nome: 'daniel', setor: 'PAF10'},
+		{nome: 'cristiane soares', setor: 'PAF10'},
+		{nome: 'janise', setor: 'PAF10'},
+		{nome: 'miranda', setor: 'PAF10'},
+		{nome: 'debora', setor: 'GOP'},
+		{nome: 'nieraldo', setor: 'NPMA'},
+		{nome: 'aurelio', setor: 'GOP'},
+		{nome: 'carmo', setor: 'GOP'}
+	]	
+
+	$scope.populaSetor = function(){
+		$scope.newAgentes = arrayAgentes.filter(filtraSetor).map(function(value){return value.nome});
+	}
+
+
+	$scope.agentes = ['', 'norlan', 'magna', 'luiz', 'sandro', 'de sá', 'mauro', 'queiroz', 'manuelle', 'daniel', 'cristiane soares', 'janise', 'miranda', 'debora', 'nieraldo', 'aurelio', 'carmo'];
 	$scope.agentes.sort();
 	$scope.servico = ['', 'expediente', 'folga', 'plantão', '24horas', 'extra', 'complemento', 'férias', 'bim', 'sobreaviso', 'dispensa', 'licença', 'feira']
 	$scope.folgas = 
 	[
-	{id: 0, value: ''},
-	{id: 1, value: '1'},
+	{id: 1, value: '0'},
+	{id: 2, value: '1'},
 	{id: 3, value: '2'},
 	{id: 4, value: '3'}
 	];
