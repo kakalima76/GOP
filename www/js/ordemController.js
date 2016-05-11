@@ -505,23 +505,39 @@ angular.module('ordem.controller', [])
 	
 }])
 
-.controller('vtrCtrl', ['$scope', 'retornaService', 'ordemFactory', function($scope, retornaService, ordemFactory){
-	$scope.viaturas = ['', 'amarok 01', 'amarok 02']
+.controller('vtrCtrl', ['$scope', 'retornaService', 'ordemFactory', 'viaturasService', function($scope, retornaService, ordemFactory, viaturasService){
+	
 	$scope.selecionados = []
 	if(retornaService.retornaArray()){
 		retornaService.reseta();
 	}
+	$scope.tipos = viaturasService.tipos;
 
+	function filtro(value){
+		var viatura = document.getElementById('tipoVtr').value;
+			if(value.tipo === viatura){
+				return true;
+			}
+	}
 
+	$scope.mudaTipo = function(){
+		var array = viaturasService.viaturas.filter(filtro);
+		$scope.viaturas = array.map(function(value){
+			return value.placa;
+		})
+	}
+
+	
 	$scope.limpar = function(){
 		retornaService.reseta();
 		$scope.selecionados = retornaService.retornaArray();
 	}
 
 	$scope.confirmar = function(){
-		var rg = /(,)*(;)*/ig;
-		var str = document.getElementById('vtr').value
-		retornaService.guarda(str.replace(rg,''));
+		var tipo = document.getElementById('tipoVtr').value;
+		var opcoes = document.getElementById('vtr').value
+		var str = tipo + ' - ' + opcoes;
+		retornaService.guarda(str);
 		//coloquei ambos retornando retornaService.retornaArray() pois retorna um array vazio
 		$scope.selecionados = retornaService.retornaArray();
 		$scope.chefes = retornaService.retornaArray();
@@ -529,8 +545,7 @@ angular.module('ordem.controller', [])
 	}
 	$scope.salvar = function(){
 		ordemFactory.setViatura($scope.selecionados);
-		retornaService.stateGo();
-		
+		retornaService.stateGo();		
 	}
 }])
 

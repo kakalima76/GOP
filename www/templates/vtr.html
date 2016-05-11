@@ -4,12 +4,23 @@
     </ion-header-bar>
 <ion-content>
 	<div class="list">
+
   <label class="item item-input item-select">
-  <div class="input-label">VTR</div>
+  <div class="input-label">Tipo</div>
+  <select id='tipoVtr' ng-model='tipoVtr' ng-change='mudaTipo()'>
+  <option ng-repeat='t in tipos'>{{t}}</option>
+  </select>
+  </label>
+
+
+  <label class="item item-input item-select">
+  <div class="input-label">Viatura</div>
   <select id='vtr'>
   <option ng-repeat='v in viaturas'>{{v}}</option>
   </select>
   </label>
+
+
   <div><h4 ng-repeat='s in selecionados'>{{s}}</h4></div>
   <button class="button button-full button-assertive" ng-click="confirmar()">
   Confirmar
